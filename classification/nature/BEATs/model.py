@@ -53,7 +53,13 @@ class CustomBEATs(L.LightningModule):
 #         valid_f1 = f1_score(label.detach().cpu().numpy(), preds.detach().cpu().numpy(), average='macro')
         metrics = {'val_loss': loss, 'val_f1': valid_f1}
         self.log_dict(metrics, prog_bar=True, on_step=False, on_epoch=True)
-    
+
+    def predict_step(self, batch, batch_idx):
+        self.eval()
+        data = batch
+        outputs, mask = self(data)
+        _, preds = torch.max(outputs, 1)
+        
     def configure_optimizers(self):
         optimizer = torch.optim.Adam(self.parameters(), lr=1e-3)
         scheduler = torch.optim.lr_scheduler.CosineAnnealingWarmRestarts(optimizer, T_0=10, 
