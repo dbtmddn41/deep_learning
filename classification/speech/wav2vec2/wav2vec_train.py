@@ -4,6 +4,11 @@ import evaluate
 from transformers import AutoFeatureExtractor
 from wav2vec_dataset import get_dataset
 
+class config:
+    base_model = "facebook/wav2vec2-base"
+
+cfg = config()
+
 feature_extractor = None
 accuracy = None
 
@@ -30,18 +35,18 @@ def preprocess_function(examples):
     return inputs
 
 def main():
-    feature_extractor = AutoFeatureExtractor.from_pretrained("facebook/wav2vec2-base")
+    feature_extractor = AutoFeatureExtractor.from_pretrained(cfg.base_model,)
 
     dataset, label2id, id2label = get_dataset()
 
     num_labels = len(id2label)
     model = AutoModelForAudioClassification.from_pretrained(
-        "facebook/wav2vec2-base", num_labels=num_labels, label2id=label2id, id2label=id2label
+        cfg.base_model, num_labels=num_labels, label2id=label2id, id2label=id2label
     )
     accuracy = evaluate.load("accuracy")
 
     training_args = TrainingArguments(
-        output_dir="my_awesome_mind_model",
+        output_dir="maicon",
         evaluation_strategy="epoch",
     #     eval_steps=1,
         evaluate_during_training=True,
@@ -67,4 +72,4 @@ def main():
         preprocess_logits_for_metrics=preprocess_logits_for_metrics,
     )
 
-    trainer.push_to_hub(commit_message='first')
+    trainer.push_to_hub(commit_message=f'wav2vec2_base')
