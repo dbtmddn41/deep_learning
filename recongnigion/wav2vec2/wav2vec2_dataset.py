@@ -1,8 +1,9 @@
 import torch
 from transformers import Wav2Vec2Processor
+from datasets import load_dataset
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Union
-
+processor = None
 @dataclass
 class DataCollatorCTCWithPadding:
     """
@@ -85,3 +86,4 @@ def get_dataset():
     dataset = load_dataset("audiofolder", data_dir="/kaggle/working")
     dataset = dataset['train'].train_test_split(test_size=0.05)
     dataset = dataset.map(prepare_dataset, remove_columns=dataset.column_names["train"], num_proc=4)
+    return dataset, data_collator

@@ -4,8 +4,10 @@ from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Union
 import evaluate
 from transformers import TrainingArguments, Trainer
+from wav2vec2_dataset import get_dataset
 
 wer_metric = None
+processor = None
 def compute_metrics(pred):
 #     pred_logits = pred.predictions
 #     pred_ids = np.argmax(pred_logits, axis=-1)
@@ -32,6 +34,7 @@ def preprocess_logits_for_metrics(logits, labels):
     return pred_ids, labels
 
 def main():
+    dataset, data_collator = get_dataset()
     wer_metric = evaluate.load("wer")
 
     #loss_reduction은 gpu memory 아끼기 위해, pad_token_id는 필수
